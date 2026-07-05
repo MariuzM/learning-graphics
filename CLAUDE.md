@@ -71,7 +71,7 @@ produces the stated output *before* publishing (part of the accuracy gate).
 1. ✅ **What graphics is + your first image** (PPM, pixels, RGB, coordinates) — done.
 2. ✅ **How memory works** (bytes/addresses, binary, type sizes, pointers, memory hierarchy, stack vs
    heap, row-major image layout) — done.
-3. ⬜ Drawing shapes: set-a-pixel, lines (Bresenham), a reusable image buffer class.
+3. ✅ **Drawing shapes** (reusable Image buffer struct, setPixel, slope, Bresenham line) — done.
 4. ⬜ 2D math for graphics: vectors, points, basic linear algebra we actually need.
 5. ⬜ Triangles & rasterization: filling shapes, barycentric coordinates.
 6. ⬜ From 2D to 3D: the camera, projection, the coordinate transforms (the "pipeline").

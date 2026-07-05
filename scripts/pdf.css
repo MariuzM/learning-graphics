@@ -110,6 +110,8 @@ pre {
   border-radius: 8px;
   padding: 12pt 14pt;
   overflow-x: auto;
+  white-space: pre-wrap;      /* wrap long lines in print instead of clipping them */
+  overflow-wrap: anywhere;
   margin: 0 0 12pt;
   break-inside: avoid;
   line-height: 1.5;
@@ -119,7 +121,7 @@ pre code {
   border: none;
   padding: 0;
   color: var(--text);
-  font-size: 9.6pt;
+  font-size: 9pt;
 }
 
 /* Blockquotes */
