@@ -83,17 +83,22 @@ A <strong>framebuffer</strong> is the region of memory that holds the color of e
 Each pixel's color is almost always described with three numbers: how much **R**ed, **G**reen, and **B**lue light it emits. Mix those three and you can make (nearly) any color the eye perceives. This is the **RGB color model**.
 
 <figure>
-<svg viewBox="0 0 420 160" width="420" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="150" cy="70" r="55" fill="#ff0000" fill-opacity="0.75"/>
-  <circle cx="210" cy="70" r="55" fill="#00ff00" fill-opacity="0.75"/>
-  <circle cx="180" cy="110" r="55" fill="#0000ff" fill-opacity="0.75"/>
-  <text x="95"  y="70" fill="#ffffff" font-family="sans-serif" font-size="13">R</text>
-  <text x="258" y="70" fill="#ffffff" font-family="sans-serif" font-size="13">G</text>
-  <text x="176" y="150" fill="#ffffff" font-family="sans-serif" font-size="13">B</text>
-  <text x="300" y="60" fill="#9aa4b2" font-family="sans-serif" font-size="12">Overlap of all</text>
-  <text x="300" y="78" fill="#9aa4b2" font-family="sans-serif" font-size="12">three = white</text>
+<svg viewBox="0 0 420 220" width="360" xmlns="http://www.w3.org/2000/svg">
+  <g style="isolation:isolate">
+    <rect x="105" y="12" width="210" height="196" rx="8" fill="#000000"/>
+    <circle cx="175" cy="82"  r="62" fill="#ff0000" style="mix-blend-mode:screen"/>
+    <circle cx="245" cy="82"  r="62" fill="#00ff00" style="mix-blend-mode:screen"/>
+    <circle cx="210" cy="142" r="62" fill="#0000ff" style="mix-blend-mode:screen"/>
+  </g>
+  <text x="118" y="74"  fill="#ffffff" font-family="sans-serif" font-size="15" font-weight="bold">R</text>
+  <text x="292" y="74"  fill="#000000" font-family="sans-serif" font-size="15" font-weight="bold">G</text>
+  <text x="204" y="196" fill="#ffffff" font-family="sans-serif" font-size="15" font-weight="bold">B</text>
+  <text x="188" y="70"  fill="#000000" font-family="sans-serif" font-size="10">yellow</text>
+  <text x="135" y="128" fill="#ffffff" font-family="sans-serif" font-size="10">magenta</text>
+  <text x="248" y="128" fill="#000000" font-family="sans-serif" font-size="10">cyan</text>
+  <text x="196" y="112" fill="#000000" font-family="sans-serif" font-size="10">white</text>
 </svg>
-<figcaption>Additive color: red + green + blue light combine toward white. Zero of all three is black.</figcaption>
+<figcaption>Additive light: R + G = yellow, R + B = magenta, G + B = cyan, and all three together = white. Zero of all three is black. (Rendered with real additive blending, so the overlaps are accurate.)</figcaption>
 </figure>
 
 Each of the three channels is usually a whole number from **0 to 255**. Why 255? Because one channel is stored in a single **byte** (8 bits), and 8 bits can represent 256 distinct values, 0 through 255.
@@ -229,46 +234,33 @@ A <strong>for loop</strong> repeats a block of code. <code>for (int x = 0; x &lt
 - Inside, we choose this pixel's color: red equals the column, green equals the row, blue is a flat 128. So the left edge is dark red, the right edge is bright red, the top is dark green, the bottom is bright green — a smooth two-way gradient.
 - `return 0;` — tell the operating system "the program finished successfully." By convention, `0` means success.
 
-## 8. Compile and run it
+## 8. How the code becomes an image
 
-Save the code as `gradient.cpp`, then in a terminal:
-
-```bash
-# 1. Compile the source file into an executable called "gradient"
-clang++ -std=c++17 -O2 gradient.cpp -o gradient
-
-# 2. Run it, sending its printed output into an image file
-./gradient > gradient.ppm
-```
+When this program is compiled into a runnable form and executed, everything it prints with `std::cout` can be captured into a file instead of shown on screen. Because what it prints is exactly the PPM format from §6, that file *is* an image — conventionally named `gradient.ppm`.
 
 <div class="note jargon">
-<span class="note-title">Jargon · What those flags mean</span>
-<code>-std=c++17</code> picks the 2017 version of the C++ language. <code>-O2</code> asks for optimized, faster machine code. <code>-o gradient</code> names the output executable. The <code>&gt;</code> is a shell <strong>redirect</strong>: instead of printing to the screen, send the program's output into <code>gradient.ppm</code>.
+<span class="note-title">Jargon · Compiling, running, and redirecting</span>
+<strong>Compiling</strong> turns the <code>.cpp</code> source into an executable program (the language version and optimization level are chosen with compiler options like <code>-std=c++17</code> and <code>-O2</code>). <strong>Running</strong> it makes it emit the pixel numbers. A shell <strong>redirect</strong> — the <code>&gt;</code> symbol — sends that printed output into a file instead of the terminal, which is what saves the image. A <code>.ppm</code> file can then be turned into the more common <code>.png</code> with macOS's built-in <code>sips</code> tool.
 </div>
 
-Open `gradient.ppm` in an image viewer. On macOS you can also convert it to PNG:
-
-```bash
-# sips is built into macOS; no install needed
-sips -s format png gradient.ppm --out gradient.png
-```
-
-You should see a square that fades from dark in the top-left toward bright red on the right and bright green toward the bottom:
+Compiled and run, the program produces a square that fades from dark in the top-left toward bright red on the right and bright green toward the bottom:
 
 <figure>
 <svg viewBox="0 0 200 200" width="200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="gx" x1="0" y1="0" x2="1" y2="0">
+    <linearGradient id="rchan" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0" stop-color="#000080"/><stop offset="1" stop-color="#ff0080"/>
     </linearGradient>
-    <linearGradient id="gy" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#000000" stop-opacity="0"/><stop offset="1" stop-color="#00ff00" stop-opacity="0.85"/>
+    <linearGradient id="gchan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000000"/><stop offset="1" stop-color="#00ff00"/>
     </linearGradient>
   </defs>
-  <rect x="0" y="0" width="200" height="200" fill="url(#gx)"/>
-  <rect x="0" y="0" width="200" height="200" fill="url(#gy)"/>
+  <g style="isolation:isolate">
+    <rect x="0" y="0" width="200" height="200" fill="url(#rchan)"/>
+    <rect x="0" y="0" width="200" height="200" fill="url(#gchan)" style="mix-blend-mode:screen"/>
+  </g>
 </svg>
-<figcaption>Roughly what your rendered gradient.png will look like (blue held at 128).</figcaption>
+<figcaption>Your rendered gradient.png (blue held at 128): dark blue (0,0,128) top-left, magenta (255,0,128) top-right, spring green (0,255,128) bottom-left, pale yellow (255,255,128) bottom-right.</figcaption>
 </figure>
 
 <div class="note tip">
@@ -276,19 +268,81 @@ You should see a square that fades from dark in the top-left toward bright red o
 No engine, no library — you decided the color of 65,536 pixels with a formula and wrote them to disk. That loop-over-every-pixel-and-compute-a-color is the exact shape of a <strong>ray tracer</strong>, which we'll build in a few lessons. The only thing that changes is the formula inside the loop.
 </div>
 
-## 9. Exercises
+## 9. More worked examples
 
-Try these by editing only the formula inside the inner loop, then recompiling:
+The whole image is decided by the three lines that set `r`, `g`, `b`. Change only those and you get a completely different picture — the loops never change. Here's what a few formulas produce:
 
-1. **Flip a channel.** Set `r = 255 - x;`. Which corner gets bright now? Predict before you run.
-2. **Grayscale.** Set all three channels equal to `x`. What do you see, and why is "R = G = B" always a shade of gray?
-3. **Checkerboard.** Make the pixel white when `(x / 32 + y / 32)` is even and black when odd. (Hint: the `%` operator gives a remainder; `n % 2 == 0` means "even.")
-4. **Bigger.** Change `width` and `height` to 512. What happens to the file size, and why?
+### A · Flip a channel
 
-<div class="note tip">
-<span class="note-title">How to think about the exercises</span>
-Every one is the same move: change the color formula, leave the loops alone. If your prediction and the result disagree, that gap is exactly the thing worth understanding — sit with it before moving on.
-</div>
+Replace `int r = x;` with `int r = 255 - x;`. Now red is brightest where `x = 0`, so the **bright red edge moves to the left** instead of the right. Subtracting a coordinate from 255 mirrors that channel.
+
+<figure>
+<svg viewBox="0 0 200 200" width="180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="flipr" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff0080"/><stop offset="1" stop-color="#000080"/>
+    </linearGradient>
+    <linearGradient id="flipg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000000"/><stop offset="1" stop-color="#00ff00"/>
+    </linearGradient>
+  </defs>
+  <g style="isolation:isolate">
+    <rect x="0" y="0" width="200" height="200" fill="url(#flipr)"/>
+    <rect x="0" y="0" width="200" height="200" fill="url(#flipg)" style="mix-blend-mode:screen"/>
+  </g>
+</svg>
+<figcaption><code>r = 255 − x</code>: the bright-red edge is now on the left — the whole picture is the original gradient mirrored left-to-right.</figcaption>
+</figure>
+
+### B · Grayscale
+
+Set all three channels to the same value: `int r = x, g = x, b = x;`. Whenever R, G, and B are equal the pixel is a shade of **gray** — no channel dominates. Since the value here depends only on `x`, the result is vertical bands fading from black on the left (`x = 0`) to white on the right (`x = 255`).
+
+<figure>
+<svg viewBox="0 0 200 200" width="180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grayx" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#000000"/><stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="200" height="200" fill="url(#grayx)"/>
+</svg>
+<figcaption><code>r = g = b = x</code>: equal channels look gray, and depending only on <code>x</code> gives a smooth black-to-white ramp across the columns.</figcaption>
+</figure>
+
+### C · Checkerboard
+
+Make the color depend on which 32-pixel block a pixel lands in: white when `(x / 32 + y / 32)` is even, black when odd. Because `x / 32` is integer division, each 32×32 block shares one value, and adding the two block indices flips between even and odd across the grid — a **checkerboard**. (`n % 2 == 0` tests "even", using the remainder operator `%`.)
+
+<figure>
+<svg viewBox="0 0 200 200" width="180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="checker" width="50" height="50" patternUnits="userSpaceOnUse">
+      <rect width="50" height="50" fill="#000000"/>
+      <rect width="25" height="25" fill="#ffffff"/>
+      <rect x="25" y="25" width="25" height="25" fill="#ffffff"/>
+    </pattern>
+  </defs>
+  <rect x="0" y="0" width="200" height="200" fill="url(#checker)" stroke="#333c47"/>
+</svg>
+<figcaption>White when <code>(x / 32 + y / 32)</code> is even: a checkerboard. The top-left block is white because 0 + 0 is even. A 256-wide image has 8 blocks of 32 pixels across, so an 8×8 board.</figcaption>
+</figure>
+
+### D · A bigger image
+
+Change `width` and `height` from 256 to 512. That doubles each side, so there are **4× as many pixels** (512 × 512 = 262,144, versus 65,536) — and the output file grows about 4× too, since every pixel writes its own line of numbers.
+
+<figure>
+<svg viewBox="0 0 330 180" width="330" xmlns="http://www.w3.org/2000/svg">
+  <rect x="160" y="12" width="156" height="156" fill="#7ee78722" stroke="#7ee787"/>
+  <rect x="12" y="90" width="78" height="78" fill="#6ea8fe33" stroke="#6ea8fe"/>
+  <text x="51" y="132" fill="#e8edf3" font-family="sans-serif" font-size="11" text-anchor="middle">256×256</text>
+  <text x="51" y="152" fill="#8a94a1" font-family="sans-serif" font-size="9" text-anchor="middle">65,536 px</text>
+  <text x="238" y="86" fill="#e8edf3" font-family="sans-serif" font-size="12" text-anchor="middle">512×512</text>
+  <text x="238" y="104" fill="#8a94a1" font-family="sans-serif" font-size="9" text-anchor="middle">262,144 px = 4×</text>
+</svg>
+<figcaption>Doubling each side quadruples the area: the 512×512 image holds four times the pixels (and takes ~4× the memory and file size) of the 256×256 one.</figcaption>
+</figure>
 
 ## 10. What you learned
 
@@ -299,8 +353,4 @@ Every one is the same move: change the color formula, leave the loops alone. If 
 - The core loop of graphics is *"for every pixel, compute a color."*
 - C++ words now in your vocabulary: compiler, source file, executable, header, `#include`, function, `main`, variable, type, `int`, `const`, namespace, `std::cout`, `for` loop, shell redirect.
 
-## 11. Next lesson (preview)
-
-**Lesson 2 — Drawing shapes: lines and the math of putting a pixel at (x, y).** We'll stop coloring by formula and start *placing* things: a function to set one specific pixel, then drawing a straight line between two points (Bresenham's line algorithm), which forces us to confront why screens are made of discrete squares. We'll also switch from dumping text to a small, reusable image buffer in C++.
-
-> Keep this file open as you work. When something is unclear or you want a concept expanded, tell me and I'll revise this lesson and regenerate the PDF — that's the whole point of keeping it as living Markdown.
+> When something is unclear or you want a concept expanded, tell me the section and I'll revise this lesson and regenerate the PDF — that's the whole point of keeping it as living Markdown.
